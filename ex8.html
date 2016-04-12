@@ -1,0 +1,86 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <title>LEK70 CS1520 Exercise 8</title>
+  </head>
+  <body>
+    <div id="empty">
+      <button onclick="showQuiz()">Show Quiz</button>
+    </div>
+    <script type="text/javascript">
+      var xhttp;
+      var toggle = 0;
+      var score = 0;
+      var xml;
+      var answers = [];
+      var question = [];
+      var choices = [];
+
+      function showQuiz()
+      {
+        if(xhttp == null)
+        {
+          document.getElementById("empty").innerHTML = "";
+          xhttp = new XMLHttpRequest();
+          xhttp.open("GET", "data.xml", true);
+          xhttp.send();
+
+          xhttp.onreadystatechange = function() {
+              if (xhttp.readyState == 4 && xhttp.status == 200) {
+
+                  xml = xhttp.responseXML;
+                  var problems = xml.getElementsByTagName("problem");
+
+                  document.getElementById("empty").innerHTML += '<div id="score"></div></br>'; 
+
+                  for(i = 0; i < problems.length; i++)
+                  {
+                    choices[i] = [];
+                    var idq = (i + 1) * 100;
+                    question[i] = problems[i].getElementsByTagName("question")[0].childNodes[0].nodeValue;
+                    nAnswers = problems[i].getElementsByTagName("answer").length;
+                    for(j = 0; j < nAnswers; j++)
+                    {
+                      choices[i][j] = problems[i].getElementsByTagName("answer")[j].childNodes[0].nodeValue;
+                    }
+                    answers[i] = problems[i].getElementsByTagName("correct")[0].childNodes[0].nodeValue;
+                    document.getElementById("empty").innerHTML += "<div id=" + idq + ">" + (question[i]) + "</div>";
+                    for(j = 0; j < nAnswers; j++)
+                    {
+                      var id = i*10 + j;
+                      document.getElementById("empty").innerHTML += "<button id=" + id + ' onClick="answerClick(this.id)">' + (choices[i][j]) + "</button></br>";
+                    }
+                    document.getElementById("empty").innerHTML += "</br>";
+                  }
+
+                  document.getElementById("score").innerHTML = 'Quiz Score: ' + score + '/' + question.length;
+              }
+          };
+        }
+      }
+
+      function answerClick(itemClicked)
+      {
+        var q = Math.floor(itemClicked / 10);
+        var a = itemClicked % 10;
+
+        if(choices[q][a] == answers[q])
+        {
+          document.getElementById((q + 1) * 100).innerHTML = question[q] + " Correct - " + answers[q];
+          for(i = 0; i < choices[q].length; i++)
+          {
+            document.getElementById((q *10) + i).disabled = true;
+          }
+          document.getElementById()
+          score += 1;
+          document.getElementById("score").innerHTML = 'Quiz Score: ' + score + '/' + question.length;
+        }
+        else
+        {
+          document.getElementById((q + 1) * 100).innerHTML = question[q] + " Incorrect";
+        }
+      }
+    </script>
+  </body>
+</html>
